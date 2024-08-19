@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/main/configuration-schema.json
+package: api
+generate:
+  echo-server: true       # Echo用のコードを生成
+  models: true
+  embedded-spec: true     # 生成するコードにOpen API specを埋め込むか（後述）
+output: ../pkg/api.gen.go # 出力先
