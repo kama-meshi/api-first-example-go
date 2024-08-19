@@ -1,0 +1,125 @@
+# yaml-language-server: $schema=../openapi-v3.0-draft7-schema.json
+# Work around: redhat-developer/yaml-language-serverでOpenAPI v3のSchemaがエラーとなってしまう問題の回避
+# Refs: https://github.com/redhat-developer/vscode-yaml/issues/532
+openapi: 3.0.3
+info:
+  title: TODO List API
+  description: A simple API to manage TODO items
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+
+paths:
+  /todos:
+    get:
+      summary: List all TODO items
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    post:
+      summary: Create a new TODO item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+
+  /todos/{todoId}:
+    get:
+      summary: Get a specific TODO item
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: TODO item not found
+
+    put:
+      summary: Update a TODO item
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: TODO item not found
+
+    delete:
+      summary: Delete a TODO item
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successful deletion
+        '404':
+          description: TODO item not found
+
+components:
+  schemas:
+    Todo:
+      allOf:
+        - $ref: '#/components/schemas/TodoInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            createdAt:
+              type: string
+              format: date-time
+          required:
+            - id
+            - createdAt
+
+    TodoInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        completed:
+          type: boolean
+      required:
+        - title
