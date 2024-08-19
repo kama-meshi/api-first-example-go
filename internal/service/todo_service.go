@@ -20,9 +20,24 @@ func NewTodoService() *TodoService {
 	}
 }
 
+func WithLimit(size uint) Option {
+	return func(todos []api.Todo) []api.Todo {
+		if size == 0 {
+			return make([]api.Todo, 0)
+		}
+		if len(todos) < int(size) {
+			return todos
+		}
+		return todos[:size]
+	}
+}
+
 // Get all TODO items
-func (h *TodoService) GetTodos() []api.Todo {
+func (h *TodoService) GetTodos(options ...Option) []api.Todo {
 	todos := h.todos
+	for _, opt := range options {
+		todos = opt(todos)
+	}
 	return todos
 }
 

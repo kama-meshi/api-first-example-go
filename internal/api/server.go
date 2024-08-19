@@ -19,8 +19,12 @@ func NewServer() *Server {
 }
 
 // GetTodos implements api.ServerInterface.
-func (s *Server) GetTodos(ctx echo.Context) error {
-	todos := s.service.GetTodos()
+func (s *Server) GetTodos(ctx echo.Context, params api.GetTodosParams) error {
+	options := make([]service.Option, 0)
+	if params.Limit != nil {
+		options = append(options, service.WithLimit(uint(*params.Limit)))
+	}
+	todos := s.service.GetTodos(options...)
 	ctx.JSON(200, todos)
 	return nil
 }
